@@ -36,11 +36,17 @@ public class TestMain_modified {
         final InetSocketAddress LOCALHOST_EPHEMERAL1 = new InetSocketAddress(brokerAddress,brokerPort);;
         // 所以初步认为 MqttAsyncClient 是包含了 MqttRxClient 
         Mqtt5SimpleAuth simpleAuth = Mqtt5SimpleAuth.builder().username(myuserName).password(mypwd.getBytes()).build();
-        Mqtt5Connect connectMessage = Mqtt5Connect.builder().cleanStart(false).sessionExpiryInterval(500).simpleAuth(simpleAuth).build();
+        //第一种 auth 方式 1.1
+        //Mqtt5AsyncClient client1 = Mqtt5Client.builder().serverAddress(LOCALHOST_EPHEMERAL1).identifier(clientId).simpleAuth(simpleAuth).buildAsync();
+        //第二种 auth 方式 2.1
         Mqtt5AsyncClient client1 = Mqtt5Client.builder().serverAddress(LOCALHOST_EPHEMERAL1).identifier(clientId).buildAsync();
         //------------------------------- client connect --------------------------------------
-        CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect(connectMessage);
-        //CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect();
+        //第一种 auth 方式 1.2
+        //CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect();	
+        //第二种 auth 方式 2.2
+        Mqtt5Connect connectMessage = Mqtt5Connect.builder().cleanStart(true).simpleAuth(simpleAuth).build();
+        //第二种 auth 方式 2.3
+        CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect(connectMessage);	
         //-------------------------------  to subscribe  --------------------------------------
         Mqtt5AsyncClient.Mqtt5SubscribeAndCallbackBuilder.Start subscribeBuilder1 = client1.subscribeWith();
         Mqtt5SubscribeAndCallbackBuilder.Start.Complete c1 = subscribeBuilder1.topicFilter(topic);
