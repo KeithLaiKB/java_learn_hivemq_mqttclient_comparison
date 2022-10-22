@@ -24,7 +24,7 @@ public class TestMain_modified {
         MqttQos qos             = MqttQos.AT_MOST_ONCE;		// equals qos 0
         String brokerAddress  	= "127.0.0.1";				// broker address
         int brokerPort			= 1883;						// broker port
-        String clientId     	= "JavaSample_receivera";	// client Id
+        String clientId     	= "JavaSample_recver";	// client Id
         
 
         
