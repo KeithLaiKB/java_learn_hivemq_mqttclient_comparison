@@ -22,7 +22,7 @@ public class TestMain_modified {
 		
         String topic        	= "Resource1";	// topic
         MqttQos qos             = MqttQos.AT_MOST_ONCE;		// equals qos 0
-        String brokerAddress  	= "127.0.0.1";				// broker address
+        String brokerAddress  	= "192.168.239.137";				// broker address
         int brokerPort			= 1883;						// broker port
         String clientId     	= "JavaSample_recver";	// client Id
         
