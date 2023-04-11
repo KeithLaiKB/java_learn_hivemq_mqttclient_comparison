@@ -1,4 +1,4 @@
-package com.learn.hivemq_mqttclient.receiver;
+package com.learn.hivemq_mqttclient.receiver.totesttp;
 
 import java.net.InetSocketAddress;
 import java.util.Scanner;
@@ -21,8 +21,8 @@ public class TestMain_modified {
 	public static void main(String[] args) {
 		
         String topic        	= "Resource1";	// topic
-        MqttQos qos             = MqttQos.AT_MOST_ONCE;		// equals qos 0
         //MqttQos qos             = MqttQos.AT_MOST_ONCE;		// equals qos 0
+        MqttQos qos             = MqttQos.AT_LEAST_ONCE;
         String brokerAddress  	= "192.168.239.137";				// broker address
         int brokerPort			= 1883;						// broker port
         String clientId     	= "JavaSample_recver";	// client Id
@@ -45,9 +45,12 @@ public class TestMain_modified {
         //第一种 auth 方式 1.2
         //CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect();	
         //第二种 auth 方式 2.2
-        Mqtt5Connect connectMessage = Mqtt5Connect.builder().cleanStart(true).simpleAuth(simpleAuth).build();
+        Mqtt5Connect connectMessage = Mqtt5Connect.builder().cleanStart(false).simpleAuth(simpleAuth).build();
         //第二种 auth 方式 2.3
-        CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect(connectMessage);	
+        CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect(connectMessage);												// subscriber connect
+        while(cplfu_connect_rslt.isDone()==false) {
+        	
+        }
         //-------------------------------  to subscribe  --------------------------------------
         Mqtt5AsyncClient.Mqtt5SubscribeAndCallbackBuilder.Start subscribeBuilder1 = client1.subscribeWith();
         Mqtt5SubscribeAndCallbackBuilder.Start.Complete c1 = subscribeBuilder1.topicFilter(topic);
@@ -57,6 +60,22 @@ public class TestMain_modified {
         			System.out.println(new String(publish.getPayloadAsBytes())); 
         		}); 	// set callback
         c1.send();		//subscribe callback and something 
+        
+        //
+        //
+        /*
+        // test connect ack中描述  和 publish的 topic alias
+        //
+        Mqtt5SubscribeAndCallbackBuilder.Start.Complete c12 = client1.subscribeWith().topicFilter(topic+"12");		//如果要订阅两个主题, 就需要一口气  client1.subscribeWith().topicFilter不能拆开, 不然订阅上会有问题 比如  会重复订阅第一个
+        c12.qos(qos);
+        c12.callback(publish2 -> {
+        			numberOfMessages = numberOfMessages +1;
+        			System.out.println(new String(publish2.getPayloadAsBytes())); 
+        		}); 	// set callback
+        c12.send();		//subscribe callback and something 				如果订阅两个只需要最后那个send就可以了
+        //	
+        //
+        */
         
         
         while(numberOfMessages < expectedNumberOfMessages) {
