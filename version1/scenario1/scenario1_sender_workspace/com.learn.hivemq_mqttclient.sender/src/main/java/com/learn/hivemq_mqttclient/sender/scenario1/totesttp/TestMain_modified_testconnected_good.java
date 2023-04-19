@@ -37,11 +37,14 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishResult;
  * 这里有 connectMessage
  *
  */
-public class TestMain_modified {
+public class TestMain_modified_testconnected_good {
 
-
+	boolean connected = false;
 	public static void main(String[] args) {
-
+		new TestMain_modified_testconnected_good().run();
+    }
+	public void run() {
+		
 		long startTime			=System.nanoTime();   		//nanoTime 会比 currentTimeMillis更加精确  
 		System.out.println(new Date(System.currentTimeMillis())); 
 		
@@ -56,9 +59,6 @@ public class TestMain_modified {
         int statusUpdate		=0;
         int statusUpdateMaxTimes=100;
         //
-        
-
-        
         String myuserName	= "IamPublisherOne";
         String mypwd		= "123456";
         
@@ -70,7 +70,7 @@ public class TestMain_modified {
         //第一种 auth 方式 1.1
         //Mqtt5AsyncClient client1 = Mqtt5Client.builder().serverAddress(LOCALHOST_EPHEMERAL1).identifier(clientId).simpleAuth(simpleAuth).buildAsync();
         //第二种 auth 方式 2.1
-        Mqtt5AsyncClient client1 = Mqtt5Client.builder().serverAddress(LOCALHOST_EPHEMERAL1).identifier(clientId).buildAsync();
+        Mqtt5AsyncClient client1 = Mqtt5Client.builder().serverAddress(LOCALHOST_EPHEMERAL1).identifier(clientId).addConnectedListener(new MyConnectedListener()).buildAsync();
         //------------------------------- client connect --------------------------------------
         //第一种 auth 方式 1.2
         //CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect();	
@@ -78,8 +78,14 @@ public class TestMain_modified {
         Mqtt5Connect connectMessage = Mqtt5Connect.builder().cleanStart(false).simpleAuth(simpleAuth).build();
         //第二种 auth 方式 2.3
         CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect(connectMessage);		// publisher connect
-        while(cplfu_connect_rslt.isDone()==false) {
-        	
+        while(connected==false) {
+        	try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	//System.out.println(connected);
         }
 		//------------------------------- client publish --------------------------------------
     	com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishBuilder.Send<CompletableFuture<Mqtt5PublishResult>>  publishBuilder1 = client1.publishWith();
@@ -110,6 +116,18 @@ public class TestMain_modified {
         System.out.println("usedTime:"+usedTime);
 		
 		
-    }
+	}
+	// 我们可以通过关闭掉 docker,来调试
+	public class MyConnectedListener implements MqttClientConnectedListener {
+
+		@Override
+		public void onConnected(MqttClientConnectedContext context) {
+			// TODO Auto-generated method stub
+			System.out.println(context.toString());			//可以发现 只有成功connect 才会显示这个, connect 不成功是不显示的(例如 docker关了)
+			connected=true;
+		}
+		
+		
+	}
 
 }
