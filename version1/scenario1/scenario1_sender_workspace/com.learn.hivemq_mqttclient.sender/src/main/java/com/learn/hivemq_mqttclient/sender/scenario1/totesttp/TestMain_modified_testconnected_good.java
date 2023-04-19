@@ -118,7 +118,7 @@ public class TestMain_modified_testconnected_good {
 		
 	}
 	// 我们可以通过关闭掉 docker,来调试
-	public class MyConnectedListener implements MqttClientConnectedListener {
+	private class MyConnectedListener implements MqttClientConnectedListener {
 
 		@Override
 		public void onConnected(MqttClientConnectedContext context) {
