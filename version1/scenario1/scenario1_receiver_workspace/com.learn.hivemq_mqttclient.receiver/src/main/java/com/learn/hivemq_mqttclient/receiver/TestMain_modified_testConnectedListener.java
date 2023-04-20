@@ -15,15 +15,14 @@ import com.hivemq.client.mqtt.mqtt5.message.auth.Mqtt5SimpleAuth;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 
-public class TestMain_modified_testconnected_good {
+public class TestMain_modified_testConnectedListener {
     
 	private static int expectedNumberOfMessages = 30;
 	private static int numberOfMessages = 0;
-	boolean connected = false;
 	
 
 	public static void main(String[] args) {
-		new TestMain_modified_testconnected_good().run();
+		new TestMain_modified_testConnectedListener().run();
     }
 	
 	public void run() {
@@ -48,7 +47,7 @@ public class TestMain_modified_testconnected_good {
 	        //第一种 auth 方式 1.1
 	        //Mqtt5AsyncClient client1 = Mqtt5Client.builder().serverAddress(LOCALHOST_EPHEMERAL1).identifier(clientId).simpleAuth(simpleAuth).buildAsync();
 	        //第二种 auth 方式 2.1
-	        Mqtt5AsyncClient client1 = Mqtt5Client.builder().serverAddress(LOCALHOST_EPHEMERAL1).identifier(clientId).addConnectedListener(new MyConnectedListener()).buildAsync();
+	        Mqtt5AsyncClient client1 = Mqtt5Client.builder().serverAddress(LOCALHOST_EPHEMERAL1).identifier(clientId).buildAsync();
 	        //------------------------------- client connect --------------------------------------
 	        //第一种 auth 方式 1.2
 	        //CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect();	
@@ -56,13 +55,9 @@ public class TestMain_modified_testconnected_good {
 	        Mqtt5Connect connectMessage = Mqtt5Connect.builder().cleanStart(true).simpleAuth(simpleAuth).build();
 	        //第二种 auth 方式 2.3
 	        CompletableFuture<Mqtt5ConnAck> cplfu_connect_rslt = client1.connect(connectMessage);	
-	        while(connected==false) {
-	        	try {
-					Thread.sleep(1);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+	        
+	        // 我们可以通过关闭掉 docker,来调试
+	        while(client1.getState().isConnected()==false) {
 	        	//System.out.println(connected);
 	        }
 	        //-------------------------------  to subscribe  --------------------------------------
@@ -89,18 +84,6 @@ public class TestMain_modified_testconnected_good {
 	        //System.exit(0);				//if using clean start false, disconnect couldn't finished the program
 	        //client1.disconnectWith().sessionExpiryInterval(0).send();
 	}
-	
-	// 我们可以通过关闭掉 docker,来调试
-	private class MyConnectedListener implements MqttClientConnectedListener {
-	
-		@Override
-		public void onConnected(MqttClientConnectedContext context) {
-			// TODO Auto-generated method stub
-			System.out.println(context.toString());			//可以发现 只有成功connect 才会显示这个, connect 不成功是不显示的(例如 docker关了)
-			connected=true;
-		}
-	}
-
 		
 		
 }

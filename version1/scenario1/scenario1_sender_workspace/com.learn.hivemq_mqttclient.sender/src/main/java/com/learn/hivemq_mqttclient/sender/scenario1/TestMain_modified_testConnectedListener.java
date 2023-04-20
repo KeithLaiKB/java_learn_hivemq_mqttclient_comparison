@@ -39,11 +39,11 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishResult;
  * 这里有 connectMessage
  *
  */
-public class TestMain_modified_testconnected_good {
+public class TestMain_modified_testConnectedListener {
 
 	boolean connected = false;
 	public static void main(String[] args) {
-		new TestMain_modified_testconnected_good().run();
+		new TestMain_modified_testConnectedListener().run();
     }
 	public void run() {
 		long startTime			=System.nanoTime();   		//nanoTime 会比 currentTimeMillis更加精确  
